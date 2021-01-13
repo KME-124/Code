@@ -1,0 +1,40 @@
+#include<UltraDistSensor.h>
+#include <Wire.h> 
+#include <LiquidCrystal_I2C.h>
+
+LiquidCrystal_I2C Lcd(0x3F,16,2);
+
+UltraDistSensor mysensor;
+float reading;
+const int trigPin = 12;
+const int echoPin = 13;
+long duration;
+int distanceCm, distanceInch;
+
+void setup(){
+  Lcd.init();
+  Lcd.backlight();
+  Serial.begin(9600);
+  mysensor.attach(12,13);
+}
+void loop() {
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  duration = pulseIn(echoPin, HIGH);
+  distanceCm= duration*0.034/2;
+  distanceInch = duration*0.0133/2;
+  reading=mysensor.distanceInCm();
+  Lcd.setCursor(0,0);
+  Lcd.print("Distance:  "); // Prints string "Distance" on the LCD
+  Lcd.print(distanceCm); // Prints the distance value from the sensor
+  Lcd.print(" cm");
+  delay(10);
+  Lcd.setCursor(0,1);
+  Lcd.print("Distance: ");
+  Lcd.print(distanceInch);
+  Lcd.print(" inch");
+  delay(10);
+}
